@@ -1,0 +1,149 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+  ArrowRight,
+  BookOpenCheck,
+  ClipboardCheck,
+  FileText,
+  Award,
+  UploadCloud,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import Logo from '@/components/logo';
+
+const features = [
+  {
+    icon: <BookOpenCheck className="h-10 w-10 text-primary" />,
+    title: 'Quiz Generator',
+    description: 'AI creates quizzes from topics or notes.',
+    dataAiHint: 'quiz test',
+  },
+  {
+    icon: <ClipboardCheck className="h-10 w-10 text-primary" />,
+    title: 'Flashcards',
+    description:
+      'Interactive flashcards you can make or auto-generate.',
+    dataAiHint: 'flashcards study',
+  },
+  {
+    icon: <FileText className="h-10 w-10 text-primary" />,
+    title: 'Notes',
+    description: 'Add, edit, and summarize your notes with AI assistance.',
+    dataAiHint: 'notes document',
+  },
+  {
+    icon: <UploadCloud className="h-10 w-10 text-primary" />,
+    title: 'File Upload',
+    description:
+      'Upload PDFs, DOCX, or TXT to generate quizzes or flashcards.',
+    dataAiHint: 'upload cloud',
+  },
+  {
+    icon: <Award className="h-10 w-10 text-primary" />,
+    title: 'Gamification',
+    description:
+      'Earn XP, track streaks, and unlock badges to stay motivated.',
+    dataAiHint: 'trophy award',
+  },
+];
+
+export default function Home() {
+  const heroImage = PlaceHolderImages.find((img) => img.id === 'hero');
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+        <Logo />
+        <nav className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+            <Link href="/signup">
+              Sign Up <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </nav>
+      </header>
+
+      <main className="flex-1">
+        <section className="container mx-auto px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline">
+            Study Buddy – Your AI Study Companion
+          </h1>
+          <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground md:text-xl">
+            Learn smarter, stay organized, and get motivated with AI-powered tools.
+          </p>
+          <div className="mt-8 flex justify-center gap-4">
+            <Button size="lg" asChild style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+              <Link href="/signup">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+
+        <section className="relative h-96 w-full">
+            {heroImage && (
+              <Image
+                src={heroImage.imageUrl}
+                alt={heroImage.description}
+                fill
+                className="object-cover"
+                data-ai-hint={heroImage.imageHint}
+                priority
+              />
+            )}
+            <div className="absolute inset-0 bg-black/30" />
+        </section>
+
+
+        <section
+          id="features"
+          className="container mx-auto w-full px-4 py-16 md:px-6 md:py-24"
+        >
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
+              Features Designed for Success
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+              Everything you need to organize your study life and excel in your
+              courses.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-8 md:grid-cols-1 lg:grid-cols-2">
+            {features.map((feature) => (
+              <Card key={feature.title} className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                <CardHeader className="flex flex-row items-start gap-4 p-6">
+                  <div>
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="mt-2 text-2xl font-bold font-headline">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 px-6 pb-6">
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
+          <Logo />
+           <div className="flex gap-4">
+            <Link href="#" className="text-sm text-muted-foreground hover:underline">About</Link>
+            <Link href="#" className="text-sm text-muted-foreground hover:underline">Contact</Link>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Study Buddy. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
