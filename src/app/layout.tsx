@@ -5,6 +5,7 @@ import './globals.css';
 import { ApiKeyProvider } from '@/hooks/use-api-key';
 import { GamificationProvider } from '@/hooks/use-gamification';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Providers } from '@/components/providers';
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
@@ -24,19 +25,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("font-body antialiased", inter.variable)}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ApiKeyProvider>
-              <GamificationProvider>
-                  {children}
-              </GamificationProvider>
-          </ApiKeyProvider>
-          <Toaster />
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ApiKeyProvider>
+                <GamificationProvider>
+                    {children}
+                </GamificationProvider>
+            </ApiKeyProvider>
+            <Toaster />
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

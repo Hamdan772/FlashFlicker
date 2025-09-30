@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, FileText, Trash2, Edit } from 'lucide-react';
+import { PlusCircle, FileText, Trash2, Edit, Save } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +19,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useApiKey } from '@/hooks/use-api-key';
+import { storage, storageUtils } from '@/lib/storage';
+import { useToast } from '@/hooks/use-toast';
 
 export type Note = {
   id: string;
@@ -52,34 +54,82 @@ const demoNote: Note = {
 
 export default function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
   const { isJudge } = useApiKey();
+  const { toast } = useToast();
+
+  // Create debounced saver for auto-save functionality
+  const debouncedSaveNotes = useMemo(
+    () => storageUtils.createDebouncedSetter<Note[]>('notes', 500),
+    []
+  );
 
   useEffect(() => {
     try {
-      const savedNotes = localStorage.getItem('notes');
-      if (savedNotes) {
-        setNotes(JSON.parse(savedNotes));
+      const savedNotes = storage.getItem<Note[]>('notes', []);
+      if (savedNotes && savedNotes.length > 0) {
+        setNotes(savedNotes);
       } else if (isJudge) {
         const judgeNotes = [demoNote];
         setNotes(judgeNotes);
-        localStorage.setItem('notes', JSON.stringify(judgeNotes));
+        storage.setItem('notes', judgeNotes, { compress: true });
       }
     } catch (error) {
-        console.error("Failed to access localStorage:", error);
+        console.error("Failed to access storage:", error);
         if (isJudge) {
             setNotes([demoNote]);
         }
     }
   }, [isJudge]);
 
+  // Auto-save notes when they change
+  useEffect(() => {
+    if (notes.length > 0) {
+      debouncedSaveNotes(notes);
+    }
+  }, [notes, debouncedSaveNotes]);
+
+  const saveNotesImmediately = async () => {
+    setIsSaving(true);
+    try {
+      const success = storage.setItem('notes', notes, { compress: true });
+      if (success) {
+        toast({
+          title: "Notes Saved",
+          description: "All notes have been saved successfully.",
+        });
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (error) {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save notes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const deleteNote = (id: string) => {
     setNotes(prevNotes => {
         const updatedNotes = prevNotes.filter(note => note.id !== id);
+        // Immediate save for deletions
         try {
-            localStorage.setItem('notes', JSON.stringify(updatedNotes));
+          storage.setItem('notes', updatedNotes, { compress: true });
+          toast({
+            title: "Note Deleted",
+            description: "Note has been deleted successfully.",
+          });
         } catch (error) {
-            console.error("Failed to save notes to localStorage", error);
+            console.error("Failed to save notes to storage", error);
+            toast({
+              title: "Error",
+              description: "Failed to delete note. Please try again.",
+              variant: "destructive",
+            });
         }
         return updatedNotes;
     });
@@ -91,15 +141,25 @@ export default function NotesPage() {
         <div>
           <h1 className="text-3xl font-bold font-headline">Notes</h1>
           <p className="text-muted-foreground">
-            Create, edit, and summarize your notes with AI.
+            Create, edit, and summarize your notes with AI. Auto-saves enabled.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/notes/new">
-            <PlusCircle className="mr-2" />
-            New Note
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={saveNotesImmediately}
+            disabled={isSaving}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {isSaving ? 'Saving...' : 'Save Now'}
+          </Button>
+          <Button asChild>
+            <Link href="/dashboard/notes/new">
+              <PlusCircle className="mr-2" />
+              New Note
+            </Link>
+          </Button>
+        </div>
       </div>
       
       {notes.length > 0 ? (

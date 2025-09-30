@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import { storage } from '@/lib/storage';
 
 const JUDGE_API_KEY = 'AIzaSyDnpuqJ3kFFT9y31y7oHd0cbJhf01-GiHg';
 const API_KEY_STORAGE_KEY = 'gemini_api_key';
@@ -25,7 +26,8 @@ export function ApiKeyProvider({ children }: { children: React.ReactNode }) {
   const [isJudge, setIsJudge] = useState(false);
 
   useEffect(() => {
-    const storedKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+    // Use advanced storage with encryption for API keys
+    const storedKey = storage.getItem<string>(API_KEY_STORAGE_KEY);
     if (storedKey) {
       setInternalApiKey(storedKey);
       setIsKeySet(true);
@@ -43,15 +45,20 @@ export function ApiKeyProvider({ children }: { children: React.ReactNode }) {
       setIsJudge(upperCaseKey === 'JUDGE');
       // Crucially, do NOT store the special key in localStorage
       // But we can clear any previous user-set key
-      localStorage.removeItem(API_KEY_STORAGE_KEY);
+      storage.removeItem(API_KEY_STORAGE_KEY);
     } else if (key) {
-      localStorage.setItem(API_KEY_STORAGE_KEY, key);
+      // Store API key with encryption and compression for security
+      storage.setItem(API_KEY_STORAGE_KEY, key, { 
+        encrypt: true, 
+        compress: true,
+        version: '1.0.0'
+      });
       setInternalApiKey(key);
       setIsKeySet(true);
       setIsOwner(false);
       setIsJudge(false);
     } else {
-      localStorage.removeItem(API_KEY_STORAGE_KEY);
+      storage.removeItem(API_KEY_STORAGE_KEY);
       setInternalApiKey('');
       setIsKeySet(false);
       setIsOwner(false);

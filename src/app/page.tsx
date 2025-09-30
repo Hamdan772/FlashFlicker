@@ -143,7 +143,6 @@ const testimonials = [
 ]
 
 export default function Home() {
-
     const plugin = React.useRef(
         Autoplay({ delay: 3000, stopOnInteraction: true })
     )
@@ -155,7 +154,7 @@ export default function Home() {
         <nav className="flex items-center gap-2">
           <Button asChild>
             <Link href="/dashboard">
-              Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              Dashboard <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </nav>

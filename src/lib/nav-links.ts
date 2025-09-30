@@ -7,6 +7,7 @@ import {
   type LucideIcon,
   Bell,
   BrainCircuit,
+  Database,
 } from 'lucide-react';
 
 type NavLink = {
@@ -50,6 +51,11 @@ const baseNavLinks: NavLink[] = [
     href: '/dashboard/rewards',
     label: 'Rewards',
     icon: Award,
+  },
+  {
+    href: '/dashboard/data',
+    label: 'Data Manager',
+    icon: Database,
   },
 ];
 

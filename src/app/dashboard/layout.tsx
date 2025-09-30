@@ -9,7 +9,7 @@ import { getNavLinks } from '@/lib/nav-links';
 import Logo from '@/components/logo';
 import ApiKeyManager from '@/components/api-key-manager';
 import { Button } from '@/components/ui/button';
-import { ChevronsLeft, Menu } from 'lucide-react';
+import { ChevronsLeft, Menu, Home } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useApiKey } from '@/hooks/use-api-key';
@@ -156,6 +156,12 @@ export default function DashboardLayout({
                 <div className="flex items-center gap-2">
                     <ThemeSwitcher />
                     <ApiKeyManager />
+                    
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href="/">
+                        <Home className="h-4 w-4" />
+                      </Link>
+                    </Button>
                 </div>
             </header>
              <main className="flex-grow p-4 md:gap-8 md:p-8 lg:p-10">
