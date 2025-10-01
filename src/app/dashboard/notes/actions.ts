@@ -2,7 +2,6 @@
 'use server';
 
 import mammoth from 'mammoth';
-import pdf from 'pdf-parse';
 
 type ProcessedFileResult = {
     content?: string;
@@ -28,8 +27,14 @@ export async function processFiles(formData: FormData): Promise<ProcessedFileRes
             const arrayBuffer = await file.arrayBuffer();
             
             if (file.type === 'application/pdf') {
-                const data = await pdf(Buffer.from(arrayBuffer));
-                textContent = data.text;
+                try {
+                    const pdf = (await import('pdf-parse')).default;
+                    const data = await pdf(Buffer.from(arrayBuffer));
+                    textContent = data.text;
+                } catch (error) {
+                    console.warn(`Error parsing PDF: ${error}. Skipping file: ${file.name}`);
+                    continue;
+                }
             } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
                 const result = await mammoth.extractRawText({ arrayBuffer });
                 textContent = result.value;

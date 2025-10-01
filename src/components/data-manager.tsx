@@ -5,7 +5,7 @@ import { storage } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -35,11 +35,9 @@ export default function DataManager() {
   });
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    setIsClient(true);
     setStats(storage.getStorageStats());
   }, []);
 
@@ -67,7 +65,7 @@ export default function DataManager() {
         title: "Backup Created",
         description: "Your data has been exported successfully.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Export Failed",
         description: "Failed to create backup file.",
@@ -101,7 +99,7 @@ export default function DataManager() {
         } else {
           throw new Error('Import failed');
         }
-      } catch (error) {
+      } catch {
         toast({
           title: "Import Failed",
           description: "Failed to import backup file. Please check the file format.",
@@ -144,13 +142,6 @@ export default function DataManager() {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getStorageUsageColor = () => {
-    const usage = (stats.totalSize / (5 * 1024 * 1024)) * 100; // Assuming 5MB limit
-    if (usage > 80) return 'bg-red-500';
-    if (usage > 60) return 'bg-yellow-500';
-    return 'bg-green-500';
   };
 
   const storageUsagePercent = Math.min((stats.totalSize / (5 * 1024 * 1024)) * 100, 100);

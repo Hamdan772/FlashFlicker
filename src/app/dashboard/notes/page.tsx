@@ -102,7 +102,7 @@ export default function NotesPage() {
       } else {
         throw new Error('Failed to save');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Save Failed",
         description: "Failed to save notes. Please try again.",

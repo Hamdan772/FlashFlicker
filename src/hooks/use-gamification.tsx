@@ -240,7 +240,13 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         const finalProgress = { ...updated, badges: newBadges };
         
         if (JSON.stringify(finalProgress) !== JSON.stringify(prev)) {
-            localStorage.setItem(GAMIFICATION_STORAGE_KEY, JSON.stringify(finalProgress));
+            try {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem(GAMIFICATION_STORAGE_KEY, JSON.stringify(finalProgress));
+                }
+            } catch (error) {
+                console.warn('Failed to save gamification progress:', error);
+            }
         }
         return finalProgress;
     });
@@ -256,12 +262,17 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         return;
     }
 
-    const storedProgress = localStorage.getItem(GAMIFICATION_STORAGE_KEY);
     let currentProgress: ProgressData;
-    if (storedProgress) {
-        const parsed = JSON.parse(storedProgress);
-        currentProgress = { ...defaultProgress, ...parsed, actions: { ...defaultProgress.actions, ...parsed.actions } };
-    } else {
+    try {
+        const storedProgress = typeof window !== 'undefined' ? localStorage.getItem(GAMIFICATION_STORAGE_KEY) : null;
+        if (storedProgress) {
+            const parsed = JSON.parse(storedProgress);
+            currentProgress = { ...defaultProgress, ...parsed, actions: { ...defaultProgress.actions, ...parsed.actions } };
+        } else {
+            currentProgress = defaultProgress;
+        }
+    } catch (error) {
+        console.warn('Failed to load gamification progress:', error);
         currentProgress = defaultProgress;
     }
     

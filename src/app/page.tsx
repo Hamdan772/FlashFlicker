@@ -165,17 +165,21 @@ export default function Home() {
             {/* Animated Background Elements */}
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl floating"></div>
-                <div className="absolute top-40 right-20 w-24 h-24 bg-purple-500/10 rounded-full blur-xl floating-delayed"></div>
-                <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-blue-500/10 rounded-full blur-xl floating"></div>
+                <div className="absolute top-40 right-20 w-24 h-24 bg-orange-500/10 rounded-full blur-xl floating-delayed"></div>
+                <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-amber-500/10 rounded-full blur-xl floating"></div>
             </div>
             
             <div className="container relative z-10 mx-auto px-4 text-center">
-                <div className="mb-6 inline-block rounded-full gradient-border pulse-glow">
-                    <div className="px-6 py-2 text-sm font-medium gradient-text">
+                <div className="mb-6 inline-block rounded-full bg-gradient-to-r from-primary/20 to-orange-500/20 border-2 border-primary/30 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div className="px-8 py-3 text-sm font-bold text-primary dark:text-white bg-background/80 rounded-full shadow-inner">
                        ✨ Your AI-Powered Study Companion
                     </div>
                 </div>
-                <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline gradient-text fade-in-up">
+                <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline title-visible fade-in-up" style={{ 
+                    color: '#fbbf24 !important', 
+                    textShadow: '0 0 10px rgba(251, 191, 36, 0.8), 0 0 20px rgba(251, 191, 36, 0.6), 0 0 30px rgba(245, 158, 11, 0.4)',
+                    fontWeight: '800'
+                }}>
                     FlashFlicker
                 </h1>
                 <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground md:text-xl fade-in-up animation-delay-200">
@@ -232,7 +236,7 @@ export default function Home() {
                 <div key={feature.title} className="group">
                     <Card className="relative flex flex-col h-full overflow-hidden border-0 bg-card/50 backdrop-blur-sm hover-lift group-hover:shadow-2xl group-hover:shadow-primary/10 transition-all duration-500">
                         {/* Gradient border effect on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg blur-sm"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-orange-500/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg blur-sm"></div>
                         
                         <CardHeader className="relative flex flex-col items-start gap-4 p-6 z-10">
                              <div className="relative rounded-xl gradient-bg p-3 text-white group-hover:scale-110 transition-transform duration-300">
@@ -292,10 +296,10 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="gamification-highlight" className="w-full py-16 md:py-24 bg-gradient-to-br from-primary/5 to-purple-500/5 relative overflow-hidden">
+        <section id="gamification-highlight" className="w-full py-16 md:py-24 bg-gradient-to-br from-primary/5 to-orange-500/5 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-orange-500/10 to-transparent rounded-full blur-3xl"></div>
             
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -314,7 +318,7 @@ export default function Home() {
                                 <span className="text-sm font-medium">XP System</span>
                             </div>
                             <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2">
-                                <Trophy className="h-4 w-4 text-purple-500" />
+                                <Trophy className="h-4 w-4 text-orange-500" />
                                 <span className="text-sm font-medium">Leaderboards</span>
                             </div>
                         </div>
@@ -361,7 +365,7 @@ export default function Home() {
         <section id="testimonials" className="w-full py-16 md:py-24 bg-gradient-to-b from-background to-muted/10 relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute top-10 left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-10 right-10 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-10 right-10 w-24 h-24 bg-orange-500/5 rounded-full blur-2xl"></div>
             
              <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="text-center">
@@ -383,7 +387,7 @@ export default function Home() {
                            <div className="p-2">
                              <Card className="h-full hover-lift bg-card/80 backdrop-blur-sm border-0 shadow-lg group relative overflow-hidden">
                                {/* Gradient background on hover */}
-                               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                
                                <CardContent className="pt-6 flex flex-col justify-between h-full relative z-10">
                                  <div>
@@ -416,7 +420,7 @@ export default function Home() {
                                
                                {/* Quote mark decoration */}
                                <div className="absolute top-4 right-4 text-6xl text-primary/10 font-serif leading-none group-hover:text-primary/20 transition-colors duration-300">
-                                   "
+                                   &ldquo;
                                </div>
                              </Card>
                            </div>
@@ -428,12 +432,12 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="cta" className="w-full py-20 md:py-32 bg-gradient-to-br from-primary/10 via-purple-500/5 to-background text-center relative overflow-hidden">
+        <section id="cta" className="w-full py-20 md:py-32 bg-gradient-to-br from-primary/10 via-orange-500/5 to-background text-center relative overflow-hidden">
             {/* Animated background elements */}
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute top-20 left-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl floating"></div>
-                <div className="absolute bottom-20 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl floating-delayed"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-20 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl floating-delayed"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/5 to-orange-500/5 rounded-full blur-3xl"></div>
             </div>
             
             <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -453,7 +457,7 @@ export default function Home() {
                         <span className="text-sm font-medium">No Credit Card</span>
                     </div>
                     <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2 border border-primary/20">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
                         <span className="text-sm font-medium">Instant Setup</span>
                     </div>
                 </div>
@@ -481,7 +485,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-primary/10 bg-gradient-to-b from-background to-muted/20 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-orange-500/5"></div>
         <div className="container mx-auto relative z-10 px-4 py-12 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             {/* Logo section */}
