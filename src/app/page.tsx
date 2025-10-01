@@ -162,28 +162,53 @@ export default function Home() {
 
       <main className="flex-1">
          <section className="relative w-full overflow-hidden pt-20 md:pt-32 lg:pt-40 pb-20">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl floating"></div>
+                <div className="absolute top-40 right-20 w-24 h-24 bg-purple-500/10 rounded-full blur-xl floating-delayed"></div>
+                <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-blue-500/10 rounded-full blur-xl floating"></div>
+            </div>
+            
             <div className="container relative z-10 mx-auto px-4 text-center">
-                <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-                   🚀 Your AI-Powered Study Companion
+                <div className="mb-6 inline-block rounded-full gradient-border pulse-glow">
+                    <div className="px-6 py-2 text-sm font-medium gradient-text">
+                       ✨ Your AI-Powered Study Companion
+                    </div>
                 </div>
-                <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline animate-text-glow">
+                <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline gradient-text fade-in-up">
                     FlashFlicker
                 </h1>
-                <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground md:text-xl">
-                    Flick the card, spark the knowledge!
+                <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground md:text-xl fade-in-up animation-delay-200">
+                    Transform your learning journey with AI-powered flashcards, quizzes, and personalized study tools.
                 </p>
-                <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button size="lg" asChild>
-                    <Link href="/dashboard">
-                        Start Studying for Free
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                    </Button>
-                     <Button size="lg" variant="outline" asChild>
-                        <Link href="#features">
-                            Explore Features
+                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up animation-delay-400">
+                    <Button size="lg" className="gradient-bg hover-lift border-0 text-white shadow-lg" asChild>
+                        <Link href="/dashboard">
+                            Start Learning Now
+                            <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
+                     <Button size="lg" variant="outline" className="hover-lift border-primary/20 hover:border-primary/40" asChild>
+                        <Link href="#features">
+                            Discover Features
+                        </Link>
+                    </Button>
+                </div>
+                
+                {/* Stats Section */}
+                <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto fade-in-up animation-delay-400">
+                    <div className="text-center">
+                        <div className="text-2xl font-bold gradient-text">10K+</div>
+                        <div className="text-sm text-muted-foreground">Active Students</div>
+                    </div>
+                    <div className="text-center">
+                        <div className="text-2xl font-bold gradient-text">1M+</div>
+                        <div className="text-sm text-muted-foreground">Flashcards Created</div>
+                    </div>
+                    <div className="text-center">
+                        <div className="text-2xl font-bold gradient-text">95%</div>
+                        <div className="text-sm text-muted-foreground">Success Rate</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -191,11 +216,11 @@ export default function Home() {
 
         <section
           id="features"
-          className="w-full bg-muted/40 py-16 md:py-24"
+          className="w-full bg-gradient-to-br from-background to-muted/20 py-16 md:py-24"
         >
           <div className="container mx-auto px-4 md:px-6">
             <div className="text-center">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline gradient-text">
                 A Full Suite of AI-Powered Study Tools
                 </h2>
                 <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
@@ -203,18 +228,27 @@ export default function Home() {
                 </p>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {features.map((feature) => (
-                <div key={feature.title}>
-                    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-primary/10">
-                        <CardHeader className="flex flex-col items-start gap-4 p-6">
-                             <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                {features.map((feature, index) => (
+                <div key={feature.title} className="group">
+                    <Card className="relative flex flex-col h-full overflow-hidden border-0 bg-card/50 backdrop-blur-sm hover-lift group-hover:shadow-2xl group-hover:shadow-primary/10 transition-all duration-500">
+                        {/* Gradient border effect on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg blur-sm"></div>
+                        
+                        <CardHeader className="relative flex flex-col items-start gap-4 p-6 z-10">
+                             <div className="relative rounded-xl gradient-bg p-3 text-white group-hover:scale-110 transition-transform duration-300">
                                 {feature.icon}
+                                <div className="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
-                            <CardTitle className="text-lg font-bold font-headline">{feature.title}</CardTitle>
+                            <CardTitle className="text-lg font-bold font-headline group-hover:gradient-text transition-all duration-300">{feature.title}</CardTitle>
                         </CardHeader>
-                        <CardContent className="flex-1 px-6 pb-6">
-                            <p className="text-muted-foreground text-sm">{feature.description}</p>
+                        <CardContent className="relative flex-1 px-6 pb-6 z-10">
+                            <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
                         </CardContent>
+                        
+                        {/* Floating number indicator */}
+                        <div className="absolute top-4 right-4 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-xs font-semibold text-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            {index + 1}
+                        </div>
                     </Card>
                 </div>
                 ))}
@@ -222,68 +256,101 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how-it-works" className="w-full py-16 md:py-24 bg-background">
+        <section id="how-it-works" className="w-full py-16 md:py-24 bg-gradient-to-b from-background to-muted/10">
             <div className="container mx-auto px-4 md:px-6">
                  <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">How It Works</h2>
+                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline gradient-text">How It Works</h2>
                     <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                        Get started in just a few simple steps.
+                        Get started in just a few simple steps and transform your learning.
                     </p>
                 </div>
                 <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
                    {howItWorksSteps.map((step, index) => (
-                       <div key={index} className="text-center flex flex-col items-center">
-                           <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-4">
+                       <div key={index} className="text-center flex flex-col items-center group relative">
+                           {/* Connection line for larger screens */}
+                           {index < howItWorksSteps.length - 1 && (
+                               <div className="hidden lg:block absolute top-8 left-full w-12 h-0.5 bg-gradient-to-r from-primary/30 to-primary/10 z-0"></div>
+                           )}
+                           
+                           <div className="relative flex items-center justify-center h-16 w-16 rounded-full gradient-bg text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                                {step.icon}
+                               <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                            </div>
-                           <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
-                           <p className="text-muted-foreground">{step.description}</p>
+                           
+                           <div className="bg-card/30 backdrop-blur-sm rounded-lg p-4 hover-lift group-hover:bg-card/50 transition-all duration-300">
+                               <h3 className="text-xl font-bold font-headline mb-3 group-hover:gradient-text transition-all duration-300">{step.title}</h3>
+                               <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                           </div>
+                           
+                           {/* Step number */}
+                           <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-xs font-bold text-white">
+                               {index + 1}
+                           </div>
                        </div>
                    ))}
                 </div>
             </div>
         </section>
 
-        <section id="gamification-highlight" className="w-full py-16 md:py-24 bg-muted/40">
-            <div className="container mx-auto px-4 md:px-6">
+        <section id="gamification-highlight" className="w-full py-16 md:py-24 bg-gradient-to-br from-primary/5 to-purple-500/5 relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-3xl"></div>
+            
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Make Learning an Adventure</h2>
-                        <p className="mt-4 text-lg text-muted-foreground">
-                            Our reward system turns studying into a rewarding experience. Earn points for completing tasks, build up your study streak, and unlock over 50 badges to celebrate your milestones.
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline gradient-text">Make Learning an Adventure</h2>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                            Transform your study sessions into an engaging journey. Earn XP for every achievement, maintain study streaks, and unlock exclusive badges that showcase your dedication.
                         </p>
-                         <Button size="lg" asChild className="mt-8">
+                        <div className="flex flex-wrap gap-4">
+                            <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2">
+                                <Star className="h-4 w-4 text-yellow-500" />
+                                <span className="text-sm font-medium">50+ Badges</span>
+                            </div>
+                            <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2">
+                                <Zap className="h-4 w-4 text-orange-500" />
+                                <span className="text-sm font-medium">XP System</span>
+                            </div>
+                            <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2">
+                                <Trophy className="h-4 w-4 text-purple-500" />
+                                <span className="text-sm font-medium">Leaderboards</span>
+                            </div>
+                        </div>
+                         <Button size="lg" className="gradient-bg hover-lift text-white border-0 shadow-lg" asChild>
                             <Link href="/dashboard">
-                                Start Earning XP
+                                Start Your Journey
+                                <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
                     </div>
                     <div className="space-y-4">
-                        <Card className="flex items-center p-4">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-yellow-400/20 text-yellow-500 mr-4">
+                        <Card className="flex items-center p-6 hover-lift bg-card/70 backdrop-blur-sm border-yellow-200/50 group">
+                            <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 text-white mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                                 <Star className="h-8 w-8" />
                             </div>
                             <div>
-                                <CardTitle className="text-lg font-headline">New Badge Unlocked!</CardTitle>
-                                <CardDescription>🎉 Power Learner</CardDescription>
+                                <CardTitle className="text-lg font-headline mb-1 group-hover:gradient-text transition-all duration-300">New Badge Unlocked!</CardTitle>
+                                <CardDescription className="text-base">🎉 Power Learner Achievement</CardDescription>
                             </div>
                         </Card>
-                         <Card className="flex items-center p-4">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-red-400/20 text-red-500 mr-4">
+                         <Card className="flex items-center p-6 hover-lift bg-card/70 backdrop-blur-sm border-red-200/50 group">
+                            <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-red-400 to-orange-500 text-white mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                                 <Zap className="h-8 w-8" />
                             </div>
                             <div>
-                                <CardTitle className="text-lg font-headline">10-Day Streak!</CardTitle>
-                                <CardDescription>You&apos;re on fire! 🔥</CardDescription>
+                                <CardTitle className="text-lg font-headline mb-1 group-hover:gradient-text transition-all duration-300">10-Day Streak!</CardTitle>
+                                <CardDescription className="text-base">You&apos;re absolutely crushing it! 🔥</CardDescription>
                             </div>
                         </Card>
-                        <Card className="flex items-center p-4">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary/20 text-primary mr-4">
+                        <Card className="flex items-center p-6 hover-lift bg-card/70 backdrop-blur-sm border-primary/50 group">
+                            <div className="flex items-center justify-center h-14 w-14 rounded-xl gradient-bg text-white mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                                 <BarChart className="h-8 w-8" />
                             </div>
                             <div>
-                                <CardTitle className="text-lg font-headline">Level 5 Reached!</CardTitle>
-                                <CardDescription>+1500 XP Gained</CardDescription>
+                                <CardTitle className="text-lg font-headline mb-1 group-hover:gradient-text transition-all duration-300">Level 5 Reached!</CardTitle>
+                                <CardDescription className="text-base">+1500 XP Gained - Keep going!</CardDescription>
                             </div>
                         </Card>
                     </div>
@@ -291,12 +358,16 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="testimonials" className="w-full py-16 md:py-24 bg-background">
-             <div className="container mx-auto px-4 md:px-6">
+        <section id="testimonials" className="w-full py-16 md:py-24 bg-gradient-to-b from-background to-muted/10 relative overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute top-10 left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-10 right-10 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl"></div>
+            
+             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Loved by Students Everywhere</h2>
+                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline gradient-text">Loved by Students Everywhere</h2>
                     <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                        Don&apos;t just take our word for it. Here&apos;s what learners are saying about FlashFlicker.
+                        Join thousands of learners who transformed their study experience with FlashFlicker.
                     </p>
                 </div>
                 <div className="mt-12">
@@ -309,23 +380,44 @@ export default function Home() {
                      <CarouselContent>
                        {testimonials.map((testimonial, index) => (
                          <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                           <div className="p-1">
-                             <Card className="h-full">
-                               <CardContent className="pt-6 flex flex-col justify-between h-full">
+                           <div className="p-2">
+                             <Card className="h-full hover-lift bg-card/80 backdrop-blur-sm border-0 shadow-lg group relative overflow-hidden">
+                               {/* Gradient background on hover */}
+                               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                               
+                               <CardContent className="pt-6 flex flex-col justify-between h-full relative z-10">
                                  <div>
-                                   <div className="flex mb-2">
-                                     {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
+                                   <div className="flex mb-4 gap-1">
+                                     {[...Array(5)].map((_, i) => (
+                                         <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform duration-300" style={{ transitionDelay: `${i * 50}ms` }} />
+                                     ))}
                                    </div>
-                                   <p className="text-muted-foreground mb-4 italic">&ldquo;{testimonial.quote}&rdquo;</p>
+                                   <p className="text-muted-foreground mb-6 italic leading-relaxed text-sm group-hover:text-foreground/80 transition-colors duration-300">
+                                       &ldquo;{testimonial.quote}&rdquo;
+                                   </p>
                                  </div>
                                  <div className="flex items-center mt-auto">
-                                   <Image src={testimonial.avatar} alt={testimonial.name} width={40} height={40} className="rounded-full mr-4" />
+                                   <div className="relative">
+                                       <Image 
+                                           src={testimonial.avatar} 
+                                           alt={testimonial.name} 
+                                           width={48} 
+                                           height={48} 
+                                           className="rounded-full mr-4 group-hover:scale-110 transition-transform duration-300 shadow-md" 
+                                       />
+                                       <div className="absolute inset-0 rounded-full border-2 border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                   </div>
                                    <div>
-                                     <p className="font-semibold">{testimonial.name}</p>
-                                     <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                                     <p className="font-semibold group-hover:gradient-text transition-all duration-300">{testimonial.name}</p>
+                                     <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                                    </div>
                                  </div>
                                </CardContent>
+                               
+                               {/* Quote mark decoration */}
+                               <div className="absolute top-4 right-4 text-6xl text-primary/10 font-serif leading-none group-hover:text-primary/20 transition-colors duration-300">
+                                   "
+                               </div>
                              </Card>
                            </div>
                          </CarouselItem>
@@ -336,36 +428,88 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="cta" className="w-full py-16 md:py-24 bg-muted/40 text-center">
-            <div className="container mx-auto px-4 md:px-6">
-                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Ready to Revolutionize Your Studying?</h2>
-                <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                    Join thousands of students who are learning smarter, not harder. Sign up for free and unlock your full potential.
+        <section id="cta" className="w-full py-20 md:py-32 bg-gradient-to-br from-primary/10 via-purple-500/5 to-background text-center relative overflow-hidden">
+            {/* Animated background elements */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-20 left-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl floating"></div>
+                <div className="absolute bottom-20 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl floating-delayed"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-full blur-3xl"></div>
+            </div>
+            
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
+                 <h2 className="text-3xl font-bold tracking-tight sm:text-5xl font-headline gradient-text mb-6">Ready to Transform Your Learning?</h2>
+                <p className="mx-auto mt-6 max-w-3xl text-xl text-muted-foreground leading-relaxed">
+                    Join over 10,000 students who have revolutionized their study habits with AI-powered tools. Start your journey to academic excellence today.
                 </p>
-                 <div className="mt-8 flex justify-center">
-                    <Button size="lg" asChild>
+                
+                {/* Feature highlights */}
+                <div className="flex flex-wrap justify-center gap-6 mt-8 mb-10">
+                    <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2 border border-primary/20">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium">Free Forever</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2 border border-primary/20">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium">No Credit Card</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm rounded-full px-4 py-2 border border-primary/20">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium">Instant Setup</span>
+                    </div>
+                </div>
+                
+                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Button size="lg" className="gradient-bg hover-lift text-white border-0 shadow-2xl text-lg px-8 py-6" asChild>
                         <Link href="/dashboard">
-                            Try Now
-                            <ArrowRight className="ml-2 h-4 w-4" />
+                            Start Learning Now
+                            <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                    </Button>
+                    <Button size="lg" variant="outline" className="hover-lift border-primary/30 hover:border-primary/60 text-lg px-8 py-6" asChild>
+                        <Link href="#features">
+                            Explore Features
                         </Link>
                     </Button>
                 </div>
+                
+                <p className="mt-8 text-sm text-muted-foreground">
+                    Trusted by students from 100+ universities worldwide
+                </p>
             </div>
         </section>
 
       </main>
 
-      <footer className="border-t bg-background">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 text-center md:flex-row md:px-6">
-          <Logo />
-           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <a href="#features" className="text-sm text-muted-foreground hover:underline">Features</a>
-            <Link href="#" className="text-sm text-muted-foreground hover:underline">Contact</Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:underline">Privacy Policy</Link>
+      <footer className="border-t border-primary/10 bg-gradient-to-b from-background to-muted/20 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-purple-500/5"></div>
+        <div className="container mx-auto relative z-10 px-4 py-12 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            {/* Logo section */}
+            <div className="flex flex-col items-center md:items-start gap-4">
+              <Logo />
+              <p className="text-sm text-muted-foreground max-w-xs text-center md:text-left">
+                Empowering students worldwide with AI-powered learning tools.
+              </p>
+            </div>
+            
+            {/* Navigation */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">Features</a>
+              <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">How It Works</a>
+              <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">Contact</Link>
+              <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">Privacy</Link>
+            </div>
+            
+            {/* Copyright */}
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <p className="text-sm text-muted-foreground">
+                &copy; {new Date().getFullYear()} FlashFlicker. All rights reserved.
+              </p>
+              <p className="text-xs text-muted-foreground/70">
+                Built with ❤️ for learners everywhere
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} FlashFlicker. All rights reserved.
-          </p>
         </div>
       </footer>
     </div>
