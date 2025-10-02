@@ -27,24 +27,23 @@ import React from 'react';
 const features = [
   {
     icon: <BrainCircuit className="h-8 w-8" />,
-    title: 'AI Study Coach',
-    description: 'Chat with an AI tutor that can answer questions based on your uploaded notes.',
+    title: 'AI Study Coach & Tutor',
+    description: 'Get personalized tutoring with our intelligent AI study coach. Chat about your notes, ask questions, and receive expert guidance tailored to your learning style.',
   },
   {
     icon: <BookOpenCheck className="h-8 w-8" />,
-    title: 'AI Quiz Generator',
-    description: 'Turn your notes or any topic into interactive quizzes to master key concepts.',
+    title: 'Smart Quiz Generator',
+    description: 'Transform any study material into interactive quizzes instantly. Our AI quiz maker creates multiple-choice questions that help you master key concepts and ace your exams.',
   },
   {
     icon: <ClipboardCheck className="h-8 w-8" />,
-    title: 'AI Flashcards',
-    description:
-      'Let our AI generate flashcard decks for you from any text content in seconds.',
+    title: 'AI Flashcard Generator',
+    description: 'Create perfect flashcards in seconds with FlashFlicker&apos;s smart flashcard generator. Turn any text, notes, or documents into memorable study cards automatically.',
   },
   {
     icon: <FileText className="h-8 w-8" />,
-    title: 'AI Note Summarizer',
-    description: 'Capture your thoughts and use AI to summarize long-form content instantly.',
+    title: 'Intelligent Note Summarizer',
+    description: 'Save hours of study time with our AI note summarizer. Get concise, well-structured summaries from lengthy content, research papers, and textbook chapters.',
   },
    {
     icon: <FileUp className="h-8 w-8" />,
@@ -172,7 +171,7 @@ export default function Home() {
             <div className="container relative z-10 mx-auto px-4 text-center">
                 <div className="mb-6 inline-block rounded-full bg-gradient-to-r from-primary/20 to-orange-500/20 border-2 border-primary/30 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300">
                     <div className="px-8 py-3 text-sm font-bold text-primary dark:text-white bg-background/80 rounded-full shadow-inner">
-                       ✨ Your AI-Powered Study Companion
+                       ✨ #1 AI-Powered Study Platform | Trusted by 10,000+ Students
                     </div>
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline title-visible fade-in-up" style={{ 
@@ -182,8 +181,11 @@ export default function Home() {
                 }}>
                     FlashFlicker
                 </h1>
+                <h2 className="mx-auto mt-4 max-w-4xl text-xl font-semibold text-muted-foreground md:text-2xl fade-in-up animation-delay-100">
+                    AI Study Tools That Actually Work - Flash Flicker Your Way to Academic Success
+                </h2>
                 <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground md:text-xl fade-in-up animation-delay-200">
-                    Transform your learning journey with AI-powered flashcards, quizzes, and personalized study tools.
+                    Transform your learning with FlashFlicker&apos;s intelligent flashcard generator, AI quiz maker, and personalized study coach. Join thousands of students boosting their grades with our smart learning platform.
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up animation-delay-400">
                     <Button size="lg" className="gradient-bg hover-lift border-0 text-white shadow-lg" asChild>
