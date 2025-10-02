@@ -134,10 +134,25 @@ class AdvancedStorage {
 
       // Handle compression
       if (data.includes('"compressed":true')) {
-        data = this.decompress(data);
+        try {
+          data = this.decompress(data);
+        } catch (error) {
+          console.warn(`Failed to decompress data for key "${key}":`, error);
+          this.removeItem(key);
+          return defaultValue || null;
+        }
       }
 
-      const item: StorageItem<T> = JSON.parse(data);
+      let item: StorageItem<T>;
+      try {
+        item = JSON.parse(data);
+      } catch (error) {
+        console.warn(`Failed to parse JSON for key "${key}":`, error);
+        console.warn(`Corrupted data:`, data.substring(0, 100) + '...');
+        // Clear corrupted data
+        this.removeItem(key);
+        return defaultValue || null;
+      }
       
       // Check TTL
       if (item.ttl && Date.now() - item.timestamp > item.ttl) {
@@ -310,14 +325,50 @@ class AdvancedStorage {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key) {
-        const item = this.getItem(key);
-        if (item === null) {
+        try {
+          const item = this.getItem(key);
+          if (item === null) {
+            keysToRemove.push(key);
+          }
+        } catch (error) {
+          console.warn(`Error during cleanup for key "${key}":`, error);
           keysToRemove.push(key);
         }
       }
     }
 
     keysToRemove.forEach(key => this.removeItem(key));
+  }
+
+  /**
+   * Clear all corrupted localStorage data
+   */
+  clearCorruptedData(): void {
+    const keysToRemove: string[] = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        try {
+          const rawData = localStorage.getItem(key);
+          if (rawData) {
+            JSON.parse(rawData);
+          }
+        } catch {
+          console.warn(`Removing corrupted data for key "${key}"`);
+          keysToRemove.push(key);
+        }
+      }
+    }
+
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      this.cache.delete(key);
+    });
+
+    if (keysToRemove.length > 0) {
+      console.log(`Cleared ${keysToRemove.length} corrupted localStorage items`);
+    }
   }
 }
 
@@ -357,12 +408,20 @@ export const storageUtils = {
       }, delay);
     };
   },
+
+  /**
+   * Clear all corrupted localStorage data
+   */
+  clearCorruptedData: () => storage.clearCorruptedData(),
 };
 
 // Auto-cleanup on page load
 if (typeof window !== 'undefined') {
-  // Clean up expired items on startup
-  setTimeout(() => storage.cleanup(), 1000);
+  // Clear corrupted data and clean up expired items on startup
+  setTimeout(() => {
+    storage.clearCorruptedData();
+    storage.cleanup();
+  }, 1000);
   
   // Set up periodic cleanup
   setInterval(() => storage.cleanup(), 5 * 60 * 1000); // Every 5 minutes

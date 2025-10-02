@@ -57,7 +57,7 @@ function QuizQuestion({ question, index, onAnswer, selectedOption, submitted }: 
 const initialState: QuizState = { questions: undefined, error: undefined, topic: undefined, difficulty: undefined };
 
 export default function QuizzesPage() {
-  const { logAction, addXp } = useGamification();
+  const { logAction, addXp, trackFeatureUse } = useGamification();
   const { apiKey, isKeySet } = useApiKey();
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -96,8 +96,10 @@ export default function QuizzesPage() {
         }
         setNumQuestions(10);
         logAction('generateQuiz');
+        trackFeatureUse('quiz');
+        addXp(15); // Award XP for generating quiz
     }
-  }, [state.questions, logAction]);
+  }, [state.questions, logAction, trackFeatureUse, addXp]);
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -160,6 +162,15 @@ export default function QuizzesPage() {
             toast({ title: 'Error', description: 'Please provide a topic, some text, or upload a file to generate a quiz.', variant: 'destructive' });
             return;
         }
+
+        if (!apiKey) {
+            toast({
+                title: 'API Key Required',
+                description: 'Please set your Gemini API key to use AI features.',
+                variant: 'destructive'
+            });
+            return;
+        }
         
         formData.append('apiKey', apiKey);
         formData.append('numQuestions', numQuestions.toString());
@@ -184,6 +195,11 @@ export default function QuizzesPage() {
     setScore(correctCount);
     setSubmitted(true);
     const earnedXp = correctCount * 10;
+    
+    // Track quiz completion
+    logAction('takeExam');
+    trackFeatureUse('quiz');
+    
     if (earnedXp > 0) {
         addXp(earnedXp);
         toast({ title: 'Quiz Submitted!', description: `You earned ${earnedXp} XP!` });
@@ -193,7 +209,11 @@ export default function QuizzesPage() {
   };
   
   const resetQuiz = () => {
-    formAction(initialState as FormData);
+    // Reset all local states
+    setAnswers({});
+    setSubmitted(false);
+    setScore(0);
+    // Note: We cannot reset the useActionState directly, but the user can generate a new quiz
   }
 
   return (

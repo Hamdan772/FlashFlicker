@@ -90,7 +90,7 @@ function FlashcardViewer({
     const [isFlipped, setIsFlipped] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editingCard, setEditingCard] = useState<EditableFlashcard | null>(null);
-    const { logAction, addXp } = useGamification();
+    const { logAction, addXp, trackFeatureUse } = useGamification();
     const { toast } = useToast();
 
     useEffect(() => {
@@ -105,6 +105,7 @@ function FlashcardViewer({
             if(nextIndex === 0 && deck.cards.length > 1) {
                  addXp(20);
                  logAction('createFlashcardDeck');
+                 trackFeatureUse('flashcards');
                  toast({ title: "Deck Completed!", description: "You earned 20 XP for reviewing the deck."});
             }
         }, 150);
@@ -438,7 +439,7 @@ export default function FlashcardsPage() {
 
   const { apiKey, isKeySet, isJudge } = useApiKey();
   const { toast } = useToast();
-  const { logAction } = useGamification();
+  const { logAction, trackFeatureUse, addXp } = useGamification();
 
   useEffect(() => {
     try {
@@ -476,6 +477,17 @@ export default function FlashcardsPage() {
     const finalDeckName = deckName || textContent.substring(0, 20) || "My New Deck";
 
     try {
+
+        
+        if (!apiKey) {
+            toast({
+                title: 'API Key Required',
+                description: 'Please set your Gemini API key to use AI features.',
+                variant: 'destructive'
+            });
+            return { error: 'API key required' };
+        }
+        
         const result = await generateFlashcards({
             content: textContent,
             numCards,
@@ -484,6 +496,8 @@ export default function FlashcardsPage() {
 
         if (result.flashcards && result.flashcards.length > 0) {
             logAction('createFlashcardDeck');
+            trackFeatureUse('flashcards');
+            addXp(20); // Award XP for creating flashcard deck
             toast({ title: 'Success!', description: `Generated ${result.flashcards.length} flashcards.`});
             
             const newDeck: FlashcardDeck = {
@@ -534,12 +548,12 @@ export default function FlashcardsPage() {
         const updatedDecks = prevDecks.filter(d => d.id !== deckId);
         try {
             localStorage.setItem(FLASHCARD_DECKS_STORAGE_KEY, JSON.stringify(updatedDecks));
-            toast({ title: 'Deck Deleted', description: 'The flashcard deck has been removed.' });
         } catch (error) {
             console.error("Failed to save decks to localStorage", error);
         }
         return updatedDecks;
     });
+    toast({ title: 'Deck Deleted', description: 'The flashcard deck has been removed.' });
   }
 
   const handleDeckUpdate = useCallback((updatedDeck: FlashcardDeck) => {

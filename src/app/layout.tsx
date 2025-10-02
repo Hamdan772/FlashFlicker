@@ -9,6 +9,7 @@ import { Providers } from '@/components/providers';
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { Analytics } from '@vercel/analytics/next';
+import { KonamiCodeDetector } from '@/components/konami-code-detector';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
           >
             <ApiKeyProvider>
                 <GamificationProvider>
+                    <KonamiCodeDetector />
                     {children}
                 </GamificationProvider>
             </ApiKeyProvider>

@@ -63,7 +63,7 @@ export default function NoteEditorPage() {
   const params = useParams();
   const { toast } = useToast();
   const { apiKey, isKeySet } = useApiKey();
-  const { logAction } = useGamification();
+  const { logAction, trackFeatureUse, addXp } = useGamification();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -111,6 +111,8 @@ export default function NoteEditorPage() {
       const result = await summarizeNote({ noteContent: textContent, apiKey });
        if (result.summary) {
         toast({ title: 'Success', description: 'Summary has been generated.'});
+        // Track AI feature usage
+        trackFeatureUse('summarize');
       }
       return { summary: result.summary };
     } catch (e) {
@@ -194,6 +196,7 @@ export default function NoteEditorPage() {
       updatedNotes = [newNote, ...savedNotes];
       if (note.content && note.content.length > 50) { // check for reasonable content length
         logAction('createNote');
+        addXp(15); // Award XP for creating a note
       }
     } else {
       updatedNotes = savedNotes.map(n => (n.id === note.id ? { ...n, ...note } : n));

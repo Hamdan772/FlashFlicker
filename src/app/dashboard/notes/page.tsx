@@ -21,6 +21,7 @@ import {
 import { useApiKey } from '@/hooks/use-api-key';
 import { storage, storageUtils } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
+import { useGamification } from '@/hooks/use-gamification';
 
 export type Note = {
   id: string;
@@ -58,6 +59,7 @@ export default function NotesPage() {
   const router = useRouter();
   const { isJudge } = useApiKey();
   const { toast } = useToast();
+  const { trackFeatureUse } = useGamification();
 
   // Create debounced saver for auto-save functionality
   const debouncedSaveNotes = useMemo(
@@ -119,6 +121,8 @@ export default function NotesPage() {
         // Immediate save for deletions
         try {
           storage.setItem('notes', updatedNotes, { compress: true });
+          // Track feature usage for notes management
+          trackFeatureUse('notes');
           toast({
             title: "Note Deleted",
             description: "Note has been deleted successfully.",

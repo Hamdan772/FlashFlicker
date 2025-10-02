@@ -52,6 +52,15 @@ function CoachPageContent() {
     setCurrentMessage('');
     
     try {
+        if (!apiKey) {
+            toast({
+                title: 'API Key Required',
+                description: 'Please set your Gemini API key to use AI features.',
+                variant: 'destructive'
+            });
+            return;
+        }
+
         const selectedNote = notes.find(n => n.id === selectedNoteId);
         const result = await chatWithCoach({
             message,

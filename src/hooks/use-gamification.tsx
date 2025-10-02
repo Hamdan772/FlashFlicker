@@ -27,6 +27,37 @@ type ProgressData = {
     createFlashcardDeck: number;
     takeExam: number;
   };
+  dailyStats: {
+    [date: string]: {
+      features: string[];
+      timeOfDay: number[];
+      quizDifficulties: string[];
+      quizTopics: string[];
+      notesCreated: number;
+      decksCreated: number;
+      summariesGenerated: number;
+      xpEarned: number;
+    };
+  };
+  weeklyStats: {
+    [week: string]: {
+      xpEarned: number;
+      daysActive: number;
+    };
+  };
+  specialEvents: {
+    konamiCodeUsed: boolean;
+    buttonMashCount: number;
+    buttonMashTimestamp: number;
+    longestSession: number;
+    largestFileUploaded: number;
+  };
+  firstUse: string;
+  totalDaysUsed: number;
+  streakHistory: { start: string; end: string; length: number }[];
+  noteTopics: string[];
+  totalWordsWritten: number;
+  perfectScores: number;
 };
 
 const GAMIFICATION_STORAGE_KEY = 'gamification_progress';
@@ -121,7 +152,7 @@ export const availableBadges: Badge[] = [
     { id: 'secret-11', name: 'The Validator', emoji: '✔️', description: 'You reported a bug (future feature).', secret: true },
     { id: 'secret-12', name: 'The Philanthropist', emoji: '💖', description: 'You donated to the project (future feature).', secret: true },
     { id: 'secret-13', name: 'The Beta Tester', emoji: '🧪', description: 'You were part of the beta program.', secret: true },
-    { id: 'secret-14', 'name': 'The First Follower', emoji: '🥇', description: 'You were one of the first 100 users.', secret: true },
+    { id: 'secret-14', name: 'The First Follower', emoji: '🥇', description: 'You were one of the first 100 users.', secret: true },
     { id: 'secret-15', name: 'The Trendsetter', emoji: '📈', description: 'You suggested a feature that got implemented.', secret: true },
     { id: 'secret-16', name: 'The Minimalist', emoji: '🧘‍♀️', description: 'You only used one feature for a whole week.', secret: true },
     { id: 'secret-17', name: 'The Maximalist', emoji: '🎉', description: 'You used all features in a single day.', secret: true },
@@ -135,8 +166,21 @@ const XP_PER_LEVEL = 100;
 type GamificationContextType = {
   progress: ProgressData;
   addXp: (amount: number) => void;
-  logAction: (actionType: keyof ProgressData['actions']) => void;
+  logAction: (actionType: keyof ProgressData['actions'], additionalData?: { 
+    difficulty?: string; 
+    topic?: string; 
+    wordCount?: number; 
+    isLongNote?: boolean;
+    noteTitle?: string;
+    fileSize?: number;
+    sessionMinutes?: number;
+    score?: number;
+  }) => void;
   getLevelDetails: () => { level: number, xpForNextLevel: number, progressPercentage: number };
+  trackSpecialEvent: (eventType: string, data?: { size?: number; minutes?: number }) => void;
+  trackFeatureUse: (feature: string) => void;
+  triggerKonamiCode: () => void;
+  trackButtonMash: () => void;
 };
 
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
@@ -152,19 +196,49 @@ const defaultProgress: ProgressData = {
       createFlashcardDeck: 0,
       takeExam: 0,
     },
+    dailyStats: {},
+    weeklyStats: {},
+    specialEvents: {
+      konamiCodeUsed: false,
+      buttonMashCount: 0,
+      buttonMashTimestamp: 0,
+      longestSession: 0,
+      largestFileUploaded: 0,
+    },
+    firstUse: new Date().toISOString().split('T')[0],
+    totalDaysUsed: 0,
+    streakHistory: [],
+    noteTopics: [],
+    totalWordsWritten: 0,
+    perfectScores: 0,
 };
 
 const ownerProgress: ProgressData = {
-    xp: 100 * (100 -1), // Level 100
-    streak: 365,
+    xp: 10000, // Level 100 (max level)
+    streak: 365, // 365-day streak (max possible)
     lastLogin: new Date().toISOString().split('T')[0],
     badges: availableBadges, // All badges unlocked
     actions: {
-      createNote: 50,
-      generateQuiz: 50,
-      createFlashcardDeck: 50,
-      takeExam: 50,
+      createNote: 100,
+      generateQuiz: 100,
+      createFlashcardDeck: 100,
+      takeExam: 100,
     },
+    dailyStats: {},
+    weeklyStats: {},
+    specialEvents: {
+      konamiCodeUsed: true,
+      buttonMashCount: 100,
+      buttonMashTimestamp: 0,
+      longestSession: 720, // 12 hours
+      largestFileUploaded: 104857600, // 100MB
+    },
+    firstUse: '2023-01-01',
+    totalDaysUsed: 365,
+    streakHistory: [{ start: '2023-01-01', end: new Date().toISOString().split('T')[0], length: 365 }],
+    noteTopics: ['Math', 'Science', 'History', 'Literature', 'Programming', 'AI', 'Machine Learning', 'Physics', 'Chemistry', 'Biology'],
+    totalWordsWritten: 1000000, // 1 million words
+    perfectScores: 100,
 }
 
 const judgeProgress: ProgressData = {
@@ -180,6 +254,21 @@ const judgeProgress: ProgressData = {
       createFlashcardDeck: 1,
       takeExam: 1,
     },
+    dailyStats: {},
+    weeklyStats: {},
+    specialEvents: {
+      konamiCodeUsed: false,
+      buttonMashCount: 5,
+      buttonMashTimestamp: 0,
+      longestSession: 120,
+      largestFileUploaded: 2097152, // 2MB
+    },
+    firstUse: '2024-01-01',
+    totalDaysUsed: 10,
+    streakHistory: [{ start: '2024-01-01', end: new Date().toISOString().split('T')[0], length: 10 }],
+    noteTopics: ['Test', 'Demo'],
+    totalWordsWritten: 1000,
+    perfectScores: 1,
 };
 
 
@@ -191,21 +280,131 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
   const checkForNewBadges = useCallback((updatedProgress: ProgressData) => {
     const newlyAwarded: Badge[] = [];
     const currentBadgeIds = new Set(updatedProgress.badges.map(b => b.id));
+    const today = new Date().toISOString().split('T')[0];
+    const currentHour = new Date().getHours();
 
     for (const badge of availableBadges) {
         if (currentBadgeIds.has(badge.id)) continue;
 
         let unlocked = false;
+        
+        // XP-based badges
         if (badge.xpThreshold && updatedProgress.xp >= badge.xpThreshold) {
             unlocked = true;
-        } else if (badge.action && badge.countThreshold && updatedProgress.actions[badge.action] >= badge.countThreshold) {
+        }
+        // Action-based badges
+        else if (badge.action && badge.countThreshold && updatedProgress.actions[badge.action] >= badge.countThreshold) {
             unlocked = true;
-        } else if (badge.id.startsWith('streak-')) {
+        }
+        // Streak-based badges
+        else if (badge.id.startsWith('streak-')) {
             const streakGoal = parseInt(badge.id.split('-')[1]);
             if (updatedProgress.streak >= streakGoal) unlocked = true;
-        } else if (badge.id.startsWith('badge-')) {
+        }
+        // Badge collection badges
+        else if (badge.id.startsWith('badge-')) {
             const badgeGoal = badge.id === 'badge-hunter' ? 10 : (badge.id === 'badge-collector' ? 25 : 50);
             if (updatedProgress.badges.length >= badgeGoal) unlocked = true;
+        }
+        // Time-based badges
+        else if (badge.id === 'night-owl') {
+            if (currentHour >= 22 || currentHour <= 2) unlocked = true;
+        }
+        else if (badge.id === 'early-bird') {
+            if (currentHour >= 5 && currentHour <= 7) unlocked = true;
+        }
+        else if (badge.id === 'weekend-warrior') {
+            const dayOfWeek = new Date().getDay();
+            if (dayOfWeek === 0 || dayOfWeek === 6) unlocked = true;
+        }
+        else if (badge.id === 'new-year') {
+            const date = new Date();
+            if (date.getMonth() === 0 && date.getDate() === 1) unlocked = true;
+        }
+        // Feature usage badges
+        else if (badge.id === 'all-features') {
+            const todayStats = updatedProgress.dailyStats[today];
+            if (todayStats && new Set(todayStats.features).size >= 4) unlocked = true;
+        }
+        else if (badge.id === 'hat-trick') {
+            const todayStats = updatedProgress.dailyStats[today];
+            if (todayStats && new Set(todayStats.features).size >= 3) unlocked = true;
+        }
+        else if (badge.id === 'ai-collaborator') {
+            const todayStats = updatedProgress.dailyStats[today];
+            if (todayStats && todayStats.features.includes('quiz') && 
+                todayStats.features.includes('flashcards') && 
+                todayStats.features.includes('summary')) unlocked = true;
+        }
+        else if (badge.id === 'librarian') {
+            const todayStats = updatedProgress.dailyStats[today];
+            if (todayStats && todayStats.decksCreated >= 3) unlocked = true;
+        }
+        else if (badge.id === 'study-marathon') {
+            const todayStats = updatedProgress.dailyStats[today];
+            if (todayStats && (todayStats.notesCreated + todayStats.decksCreated) > 5) unlocked = true;
+        }
+        // Special achievement badges
+        else if (badge.id === 'perfect-score') {
+            if (updatedProgress.perfectScores > 0) unlocked = true;
+        }
+        else if (badge.id === 'heavy-lifter') {
+            if (updatedProgress.specialEvents.largestFileUploaded > 5242880) unlocked = true; // 5MB
+        }
+        else if (badge.id === 'speed-reader') {
+            if (updatedProgress.totalWordsWritten > 10000) unlocked = true;
+        }
+        else if (badge.id === 'polymath') {
+            if (updatedProgress.noteTopics.length >= 5) unlocked = true;
+        }
+        else if (badge.id === 'note-organizer') {
+            if (updatedProgress.noteTopics.length >= 5) unlocked = true;
+        }
+        else if (badge.id === 'quick-learner') {
+            const firstUseDate = new Date(updatedProgress.firstUse);
+            const todayDate = new Date(today);
+            const daysDiff = Math.floor((todayDate.getTime() - firstUseDate.getTime()) / (1000 * 3600 * 24));
+            if (daysDiff === 0 && updatedProgress.xp >= 200) unlocked = true;
+        }
+        else if (badge.id === 'knowledge-builder') {
+            // Check if earned 1000+ XP in last 7 days
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            let weeklyXP = 0;
+            for (const [date, stats] of Object.entries(updatedProgress.dailyStats)) {
+                if (new Date(date) >= weekAgo) {
+                    weeklyXP += stats.xpEarned || 0;
+                }
+            }
+            if (weeklyXP >= 1000) unlocked = true;
+        }
+        else if (badge.id === 'dedication') {
+            if (updatedProgress.totalDaysUsed >= 30) unlocked = true;
+        }
+        else if (badge.id === 'true-fan') {
+            if (updatedProgress.totalDaysUsed >= 100) unlocked = true;
+        }
+        else if (badge.id === 'veteran') {
+            const firstUseDate = new Date(updatedProgress.firstUse);
+            const daysDiff = Math.floor((new Date().getTime() - firstUseDate.getTime()) / (1000 * 3600 * 24));
+            if (daysDiff >= 365) unlocked = true;
+        }
+        // Secret badges
+        else if (badge.id === 'secret-1') { // Konami code
+            if (updatedProgress.specialEvents.konamiCodeUsed) unlocked = true;
+        }
+        else if (badge.id === 'secret-4') { // Button masher
+            if (updatedProgress.specialEvents.buttonMashCount >= 20) unlocked = true;
+        }
+        else if (badge.id === 'secret-9') { // The Architect - 10k words
+            if (updatedProgress.totalWordsWritten >= 10000) unlocked = true;
+        }
+        else if (badge.id === 'secret-18') { // The Insomniac - 6 hours
+            if (updatedProgress.specialEvents.longestSession >= 360) unlocked = true; // 6 hours in minutes
+        }
+        else if (badge.id === 'secret-6') { // Full House - 5 decks with 25+ cards each
+            // This would need deck size tracking - for now, use deck count as approximation
+            if (updatedProgress.actions.createFlashcardDeck >= 5) unlocked = true;
         }
         
         if (unlocked) {
@@ -214,7 +413,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
 
     if (newlyAwarded.length > 0) {
-        newlyAwarded.forEach(badge => {
+        newlyAwarded.forEach((badge, index) => {
             setTimeout(() => {
                 toast({
                     title: 'New Badge Unlocked!',
@@ -225,7 +424,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
                         </div>
                     ),
                 });
-            }, 0);
+            }, index * 1000);
         });
         return [...updatedProgress.badges, ...newlyAwarded];
     }
@@ -267,7 +466,20 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         const storedProgress = typeof window !== 'undefined' ? localStorage.getItem(GAMIFICATION_STORAGE_KEY) : null;
         if (storedProgress) {
             const parsed = JSON.parse(storedProgress);
-            currentProgress = { ...defaultProgress, ...parsed, actions: { ...defaultProgress.actions, ...parsed.actions } };
+            currentProgress = { 
+              ...defaultProgress, 
+              ...parsed, 
+              actions: { ...defaultProgress.actions, ...parsed.actions },
+              dailyStats: parsed.dailyStats || {},
+              weeklyStats: parsed.weeklyStats || {},
+              specialEvents: { ...defaultProgress.specialEvents, ...parsed.specialEvents },
+              noteTopics: parsed.noteTopics || [],
+              streakHistory: parsed.streakHistory || [],
+              totalWordsWritten: parsed.totalWordsWritten || 0,
+              perfectScores: parsed.perfectScores || 0,
+              firstUse: parsed.firstUse || new Date().toISOString().split('T')[0],
+              totalDaysUsed: parsed.totalDaysUsed || 0
+            };
         } else {
             currentProgress = defaultProgress;
         }
@@ -284,13 +496,22 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     let streakUpdated = false;
+    let isNewDay = false;
+    
     if (diffDays === 1) {
         currentProgress.streak += 1;
         streakUpdated = true;
+        isNewDay = true;
     } else if (diffDays > 1) {
         currentProgress.streak = 1;
+        isNewDay = true;
     } else if (diffDays === 0 && currentProgress.streak === 0) {
         currentProgress.streak = 1;
+        isNewDay = true;
+    }
+    
+    if (isNewDay) {
+      currentProgress.totalDaysUsed += 1;
     }
     
     currentProgress.lastLogin = today;
@@ -311,12 +532,164 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     updateProgressState(prev => ({...prev, xp: prev.xp + amount }));
   }, [updateProgressState, isOwner, isJudge]);
 
-  const logAction = useCallback((actionType: keyof ProgressData['actions']) => {
+  const logAction = useCallback((actionType: keyof ProgressData['actions'], additionalData?: { 
+    difficulty?: string; 
+    topic?: string; 
+    wordCount?: number; 
+    isLongNote?: boolean;
+    noteTitle?: string;
+    fileSize?: number;
+    sessionMinutes?: number;
+    score?: number;
+  }) => {
     if (isOwner || isJudge) return;
     updateProgressState(prev => {
+        const today = new Date().toISOString().split('T')[0];
         const newActionCount = (prev.actions[actionType] || 0) + 1;
         const newActions = { ...prev.actions, [actionType]: newActionCount };
-        return { ...prev, actions: newActions, xp: prev.xp + 25 };
+        
+        // Update daily stats
+        const todayStats = prev.dailyStats[today] || {
+          features: [],
+          timeOfDay: [],
+          quizDifficulties: [],
+          quizTopics: [],
+          notesCreated: 0,
+          decksCreated: 0,
+          summariesGenerated: 0,
+          xpEarned: 0,
+        };
+
+        // Track feature usage
+        const feature = actionType === 'createNote' ? 'notes' : 
+                      actionType === 'generateQuiz' ? 'quiz' :
+                      actionType === 'createFlashcardDeck' ? 'flashcards' : 'exam';
+        
+        if (!todayStats.features.includes(feature)) {
+          todayStats.features.push(feature);
+        }
+        
+        todayStats.timeOfDay.push(new Date().getHours());
+
+        // Track specific data
+        if (additionalData?.difficulty) {
+          todayStats.quizDifficulties.push(additionalData.difficulty);
+        }
+        if (additionalData?.topic) {
+          todayStats.quizTopics.push(additionalData.topic);
+          if (!prev.noteTopics.includes(additionalData.topic)) {
+            prev.noteTopics.push(additionalData.topic);
+          }
+        }
+        if (actionType === 'createNote') {
+          todayStats.notesCreated++;
+        }
+        if (actionType === 'createFlashcardDeck') {
+          todayStats.decksCreated++;
+        }
+
+        // Update special tracking
+        const updatedProgress = { 
+          ...prev, 
+          actions: newActions, 
+          dailyStats: { ...prev.dailyStats, [today]: todayStats }
+        };
+
+        // Track word count
+        if (additionalData?.wordCount) {
+          updatedProgress.totalWordsWritten += additionalData.wordCount;
+        }
+
+        // Track file size
+        if (additionalData?.fileSize && additionalData.fileSize > updatedProgress.specialEvents.largestFileUploaded) {
+          updatedProgress.specialEvents.largestFileUploaded = additionalData.fileSize;
+        }
+
+        // Track perfect scores
+        if (additionalData?.score === 100) {
+          updatedProgress.perfectScores++;
+        }
+
+        return updatedProgress;
+    });
+  }, [updateProgressState, isOwner, isJudge]);
+
+  const trackFeatureUse = useCallback((feature: string) => {
+    if (isOwner || isJudge) return;
+    updateProgressState(prev => {
+      const today = new Date().toISOString().split('T')[0];
+      const todayStats = prev.dailyStats[today] || {
+        features: [],
+        timeOfDay: [],
+        quizDifficulties: [],
+        quizTopics: [],
+        notesCreated: 0,
+        decksCreated: 0,
+        summariesGenerated: 0,
+        xpEarned: 0,
+      };
+
+      if (!todayStats.features.includes(feature)) {
+        todayStats.features.push(feature);
+      }
+
+      if (feature === 'summary') {
+        todayStats.summariesGenerated++;
+      }
+
+      return {
+        ...prev,
+        dailyStats: { ...prev.dailyStats, [today]: todayStats }
+      };
+    });
+  }, [updateProgressState, isOwner, isJudge]);
+
+  const trackSpecialEvent = useCallback((eventType: string, data?: { size?: number; minutes?: number }) => {
+    if (isOwner || isJudge) return;
+    updateProgressState(prev => {
+      const updatedEvents = { ...prev.specialEvents };
+      
+      if (eventType === 'fileUpload' && data?.size && data.size > updatedEvents.largestFileUploaded) {
+        updatedEvents.largestFileUploaded = data.size;
+      }
+      
+      if (eventType === 'sessionLength' && data?.minutes && data.minutes > updatedEvents.longestSession) {
+        updatedEvents.longestSession = data.minutes;
+      }
+
+      return { ...prev, specialEvents: updatedEvents };
+    });
+  }, [updateProgressState, isOwner, isJudge]);
+
+  const triggerKonamiCode = useCallback(() => {
+    if (isOwner || isJudge) return;
+    updateProgressState(prev => ({
+      ...prev,
+      specialEvents: { ...prev.specialEvents, konamiCodeUsed: true }
+    }));
+  }, [updateProgressState, isOwner, isJudge]);
+
+  const trackButtonMash = useCallback(() => {
+    if (isOwner || isJudge) return;
+    updateProgressState(prev => {
+      const now = Date.now();
+      const timeSinceLastMash = now - prev.specialEvents.buttonMashTimestamp;
+      
+      let newCount = prev.specialEvents.buttonMashCount;
+      if (timeSinceLastMash < 10000) { // Within 10 seconds
+        newCount++;
+      } else {
+        newCount = 1; // Reset counter
+      }
+
+      return {
+        ...prev,
+        specialEvents: {
+          ...prev.specialEvents,
+          buttonMashCount: newCount,
+          buttonMashTimestamp: now
+        }
+      };
     });
   }, [updateProgressState, isOwner, isJudge]);
 
@@ -332,7 +705,16 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
 
 
   return (
-    <GamificationContext.Provider value={{ progress, addXp, logAction, getLevelDetails }}>
+    <GamificationContext.Provider value={{ 
+      progress, 
+      addXp, 
+      logAction, 
+      getLevelDetails, 
+      trackSpecialEvent, 
+      trackFeatureUse, 
+      triggerKonamiCode, 
+      trackButtonMash 
+    }}>
       {children}
     </GamificationContext.Provider>
   );
