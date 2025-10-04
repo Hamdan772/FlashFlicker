@@ -111,19 +111,19 @@ const testimonials = [
     },
     {
         quote: "The AI coach helped me understand a complex topic by explaining it in simple terms, using my own notes!",
-        name: "Hamdan Shaikh",
+        name: "Emily R.",
         role: "Graduate Student",
         avatar: "https://picsum.photos/seed/avatar4/100/100"
     },
     {
         quote: "I love how I can upload a PDF and instantly get a summary and a quiz. It saves me so much time.",
-        name: "Rishi S.",
+        name: "Michael B.",
         role: "University Student",
         avatar: "https://picsum.photos/seed/avatar5/100/100"
     },
     {
         quote: "The progress tracker helped me visualize where I was spending my time and improve my study habits.",
-        name: "Alex R.",
+        name: "Alex C.",
         role: "College Freshman",
         avatar: "https://picsum.photos/seed/avatar6/100/100"
     },
