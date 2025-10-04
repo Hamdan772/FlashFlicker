@@ -93,37 +93,37 @@ const howItWorksSteps = [
 const testimonials = [
     {
         quote: "FlashFlicker transformed how I prepare for exams. The AI quiz generator is a game-changer!",
-        name: "Jessica L.",
-        role: "University Student",
+        name: "Thehan",
+        role: "Student",
         avatar: "https://picsum.photos/seed/avatar1/100/100"
     },
     {
         quote: "I used to spend hours making flashcards. Now, I can generate a deck from my notes in seconds. Incredible!",
-        name: "David M.",
-        role: "High School Student",
+        name: "Rishi",
+        role: "Student",
         avatar: "https://picsum.photos/seed/avatar2/100/100"
     },
     {
         quote: "The reward features actually make studying fun. I'm motivated to keep my streak going!",
-        name: "Sarah K.",
+        name: "Sarah",
         role: "College Student",
         avatar: "https://picsum.photos/seed/avatar3/100/100"
     },
     {
         quote: "The AI coach helped me understand a complex topic by explaining it in simple terms, using my own notes!",
-        name: "Emily R.",
+        name: "Hamdan Shaikh",
         role: "Graduate Student",
         avatar: "https://picsum.photos/seed/avatar4/100/100"
     },
     {
         quote: "I love how I can upload a PDF and instantly get a summary and a quiz. It saves me so much time.",
-        name: "Michael B.",
+        name: "Rishi S.",
         role: "University Student",
         avatar: "https://picsum.photos/seed/avatar5/100/100"
     },
     {
         quote: "The progress tracker helped me visualize where I was spending my time and improve my study habits.",
-        name: "Alex C.",
+        name: "Alex R.",
         role: "College Freshman",
         avatar: "https://picsum.photos/seed/avatar6/100/100"
     },

@@ -116,27 +116,27 @@ export default function NotesPage() {
   };
 
   const deleteNote = (id: string) => {
-    setNotes(prevNotes => {
-        const updatedNotes = prevNotes.filter(note => note.id !== id);
-        // Immediate save for deletions
-        try {
-          storage.setItem('notes', updatedNotes, { compress: true });
-          // Track feature usage for notes management
-          trackFeatureUse('notes');
-          toast({
-            title: "Note Deleted",
-            description: "Note has been deleted successfully.",
-          });
-        } catch (error) {
-            console.error("Failed to save notes to storage", error);
-            toast({
-              title: "Error",
-              description: "Failed to delete note. Please try again.",
-              variant: "destructive",
-            });
-        }
-        return updatedNotes;
-    });
+    const updatedNotes = notes.filter(note => note.id !== id);
+    
+    try {
+      storage.setItem('notes', updatedNotes, { compress: true });
+      setNotes(updatedNotes);
+      
+      // Track feature usage for notes management (after state update)
+      trackFeatureUse('notes');
+      
+      toast({
+        title: "Note Deleted",
+        description: "Note has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to save notes to storage", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete note. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

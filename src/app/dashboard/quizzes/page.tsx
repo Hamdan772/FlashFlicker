@@ -95,9 +95,13 @@ export default function QuizzesPage() {
             fileInputRef.current.value = "";
         }
         setNumQuestions(10);
-        logAction('generateQuiz');
-        trackFeatureUse('quiz');
-        addXp(15); // Award XP for generating quiz
+        
+        // Use setTimeout to avoid calling during render
+        setTimeout(() => {
+          logAction('generateQuiz');
+          trackFeatureUse('quiz');
+          addXp(15); // Award XP for generating quiz
+        }, 0);
     }
   }, [state.questions, logAction, trackFeatureUse, addXp]);
   

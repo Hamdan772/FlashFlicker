@@ -34,6 +34,29 @@ Here is the note content:
 
 Based on this information, answer the user's question. Be encouraging and break down complex topics into simple, understandable parts.
 
+FORMATTING GUIDELINES:
+- Use **bold text** for key concepts and important terms
+- Use *italic text* for emphasis
+- Use \`code formatting\` for formulas, equations, or specific terminology
+- Use numbered lists (1. 2. 3.) for step-by-step explanations
+- Use bullet points (- or •) for listing related items
+- Use ## for section headers when organizing longer responses
+- Use triple backticks \`\`\` for code blocks or longer formulas
+- Break up long responses into clear paragraphs with line breaks
+- Include examples when explaining concepts
+
+Example formatting:
+## Understanding Photosynthesis
+
+**Photosynthesis** is the process where plants convert *light energy* into *chemical energy*. 
+
+The main equation is:
+\`6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂\`
+
+**Key steps:**
+1. **Light-dependent reactions** - occur in thylakoids
+2. **Calvin cycle** - occurs in stroma
+
 The conversation history is provided as a JSON array of objects, where each object has a "role" ('user' or 'assistant') and "content".
 Conversation History:
 {{{json history}}}

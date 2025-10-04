@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Send, User, Bot, Copy } from 'lucide-react';
 import { useApiKey } from '@/hooks/use-api-key';
 import { useToast } from '@/hooks/use-toast';
+import { MarkdownFormatter } from '@/components/markdown-formatter';
 import type { Note } from '../notes/page';
 import { chatWithCoach } from '@/ai/flows/chat-with-coach';
 import type { ChatMessage } from './definitions';
@@ -143,11 +144,24 @@ function CoachPageContent() {
         </CardHeader>
         <CardContent ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
             {chatHistory.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-center text-muted-foreground">
-                    <div>
-                        <Bot className="mx-auto h-12 w-12" />
-                        <p className="mt-4">Your chat history will appear here.</p>
-                        <p>Ask a question to get started!</p>
+                <div className="flex h-full items-center justify-center text-center">
+                    <div className="max-w-md space-y-4">
+                        <Bot className="mx-auto h-12 w-12 text-primary" />
+                        <div>
+                          <h3 className="text-lg font-semibold mb-2">AI Study Coach</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Get personalized help with your study materials. I can explain concepts, create study plans, and answer questions.
+                          </p>
+                        </div>
+                        <div className="bg-muted p-4 rounded-lg text-left text-sm">
+                          <p className="font-medium mb-2">Try asking:</p>
+                          <ul className="space-y-1 text-muted-foreground">
+                            <li>• &quot;Explain photosynthesis in simple terms&quot;</li>
+                            <li>• &quot;Help me understand calculus derivatives&quot;</li>
+                            <li>• &quot;Create a study schedule for my exam&quot;</li>
+                            <li>• &quot;What are the key points in my notes?&quot;</li>
+                          </ul>
+                        </div>
                     </div>
                 </div>
             ) : (
@@ -159,12 +173,34 @@ function CoachPageContent() {
                             <Bot className="h-5 w-5" />
                           </div>
                         )}
-                        <div className={`rounded-lg p-3 max-w-lg ${msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                          <div className="prose prose-sm dark:prose-invert" dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, '<br />') }} />
+                        <div className={`rounded-lg p-4 max-w-2xl ${
+                          msg.role === 'user' 
+                            ? 'bg-primary text-primary-foreground shadow-sm' 
+                            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm'
+                        }`}>
+                          {msg.role === 'assistant' ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                                <Bot className="h-3 w-3" />
+                                <span>AI Study Coach</span>
+                              </div>
+                              <MarkdownFormatter content={msg.content} />
+                            </div>
+                          ) : (
+                            <div className="whitespace-pre-wrap font-medium">{msg.content}</div>
+                          )}
                           {msg.role === 'assistant' && (
-                              <Button variant="ghost" size="icon" className="h-6 w-6 mt-2" onClick={() => handleCopy(msg.content)}>
-                                  <Copy className="h-4 w-4" />
+                            <div className="flex justify-end mt-3 pt-2 border-t border-gray-200 dark:border-gray-600">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => handleCopy(msg.content)} 
+                                className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700"
+                              >
+                                <Copy className="h-3 w-3 mr-1" />
+                                Copy Response
                               </Button>
+                            </div>
                           )}
                         </div>
                         {msg.role === 'user' && (

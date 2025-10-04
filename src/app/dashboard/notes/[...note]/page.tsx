@@ -15,6 +15,7 @@ import { ArrowLeft, Save, Sparkles, Upload, File, X, BrainCircuit, Loader2 } fro
 import type { Note } from '../page';
 import { useApiKey } from '@/hooks/use-api-key';
 import { useGamification } from '@/hooks/use-gamification';
+import { storage } from '@/lib/storage';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -166,13 +167,19 @@ export default function NoteEditorPage() {
       setNote({ title: '', content: '' });
     } else if (noteSlug && noteSlug[0]) {
       const noteId = noteSlug[0];
-      const savedNotes: Note[] = JSON.parse(localStorage.getItem('notes') || '[]');
-      const currentNote = savedNotes.find(n => n.id === noteId);
-      if (currentNote) {
-        setNote(currentNote);
-        setIsNewNote(false);
-      } else {
-        toast({ title: 'Error', description: 'Note not found.', variant: 'destructive' });
+      try {
+        const savedNotes: Note[] = JSON.parse(localStorage.getItem('notes') || '[]');
+        const currentNote = savedNotes.find(n => n.id === noteId);
+        if (currentNote) {
+          setNote(currentNote);
+          setIsNewNote(false);
+        } else {
+          toast({ title: 'Error', description: 'Note not found.', variant: 'destructive' });
+          router.push('/dashboard/notes');
+        }
+      } catch (error) {
+        console.error('Failed to load note:', error);
+        toast({ title: 'Error', description: 'Failed to load note. Storage may be corrupted.', variant: 'destructive' });
         router.push('/dashboard/notes');
       }
     }
@@ -184,27 +191,42 @@ export default function NoteEditorPage() {
       return;
     }
 
-    const savedNotes: Note[] = JSON.parse(localStorage.getItem('notes') || '[]');
-    let updatedNotes;
+    try {
+      const savedNotes: Note[] = storage.getItem<Note[]>('notes', []) || [];
+      let updatedNotes;
 
-    if (isNewNote) {
-      const newNote: Note = {
-        ...note,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-      } as Note;
-      updatedNotes = [newNote, ...savedNotes];
-      if (note.content && note.content.length > 50) { // check for reasonable content length
-        logAction('createNote');
-        addXp(15); // Award XP for creating a note
+      if (isNewNote) {
+        const newNote: Note = {
+          ...note,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+        } as Note;
+        updatedNotes = [newNote, ...savedNotes];
+        if (note.content && note.content.length > 50) { // check for reasonable content length
+          logAction('createNote');
+          addXp(15); // Award XP for creating a note
+        }
+      } else {
+        updatedNotes = savedNotes.map(n => (n.id === note.id ? { ...n, ...note } : n));
       }
-    } else {
-      updatedNotes = savedNotes.map(n => (n.id === note.id ? { ...n, ...note } : n));
-    }
 
-    localStorage.setItem('notes', JSON.stringify(updatedNotes));
-    toast({ title: 'Success', description: 'Note saved successfully!' });
-    router.push('/dashboard/notes');
+      const success = storage.setItem('notes', updatedNotes, { compress: true });
+      if (success) {
+        toast({ title: 'Success', description: 'Note saved successfully!' });
+        // Track feature usage
+        trackFeatureUse('notes');
+        router.push('/dashboard/notes');
+      } else {
+        throw new Error('Failed to save to storage');
+      }
+    } catch (error) {
+      console.error('Failed to save note:', error);
+      toast({ 
+        title: 'Save Failed', 
+        description: 'Failed to save note. Please check your browser storage or try again.', 
+        variant: 'destructive' 
+      });
+    }
   };
 
   return (
